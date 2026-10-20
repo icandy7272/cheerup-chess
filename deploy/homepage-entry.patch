@@ -1,0 +1,63 @@
+--- index.html
++++ index.html
+@@ -4,7 +4,7 @@
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <title>cheerup.tech</title>
+-  <meta name="description" content="cheerup.tech 上的几个小工具：卡丁车圈速分析、花钱的艺术、Shadow 英语跟读、五分钟日记、openGym 训练日志、小小道馆跆拳道陪练。">
++  <meta name="description" content="cheerup.tech 上的几个小工具：卡丁车圈速分析、花钱的艺术、Shadow 英语跟读、五分钟日记、openGym 训练日志、小马战术乐园、小小道馆跆拳道陪练。">
+   <meta name="color-scheme" content="light dark">
+   <meta name="theme-color" content="#f5f1ea" media="(prefers-color-scheme: light)">
+   <meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
+@@ -120,6 +120,13 @@
+     .diary  { --accent: var(--diary); }
+     .gym    { --accent: var(--gym); }
+     .taekwondo { --accent: var(--taekwondo); }
++    .chess { --accent: #a05b7c; }
++    .card.chess { background: #fff4f8; border-color: #edd4df; }
++    .chess .icon::before, .chess .tags span::before { background: #efbdd4; opacity: 0.45; }
++    @media (prefers-color-scheme: dark) {
++      .chess { --accent: #edb3cf; }
++      .card.chess { background: #30232a; border-color: #60404f; }
++    }
+ 
+     .card {
+       display: flex;
+@@ -277,6 +284,7 @@
+       .grid li:nth-child(4) { animation-delay: 0.24s; }
+       .grid li:nth-child(5) { animation-delay: 0.30s; }
+       .grid li:nth-child(6) { animation-delay: 0.36s; }
++      .grid li:nth-child(7) { animation-delay: 0.42s; }
+     }
+ 
+     @media (prefers-reduced-motion: reduce) {
+@@ -301,7 +309,7 @@
+         cheerup.tech
+       </p>
+       <h1>几个小工具，都在这里</h1>
+-      <p class="lede">练车、花钱、学英语、写日记、练身体、陪孩子学跆拳道，每个只解决一个具体的问题。点卡片直接进入。</p>
++      <p class="lede">练车、花钱、学英语、写日记、练身体、陪孩子学国际象棋和跆拳道，每个只解决一个具体的问题。点卡片直接进入。</p>
+     </header>
+ 
+     <ul class="grid" role="list">
+@@ -330,6 +338,20 @@
+           <h2>openGym 训练日志</h2>
+           <p class="desc">按推、拉、腿安排训练，逐组记录负重、次数和剩余余力，配合组间休息倒计时查看训练历史。电脑和手机登录同一账户，接着记录。</p>
+           <div class="tags"><span>推 / 拉 / 腿</span><span>逐组记录 · RIR</span><span>休息倒计时</span></div>
++        </a>
++      </li>
++
++      <li>
++        <a class="card chess" href="https://chess.cheerup.tech/">
++          <div class="card-top">
++            <span class="icon">
++              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="currentColor" stroke="none">♞</text></svg>
++            </span>
++            <span class="domain">chess.cheerup.tech<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
++          </div>
++          <h2>小马战术乐园</h2>
++          <p class="desc">陪孩子用小故事认识国际象棋战术，先找线索，再到棋盘上试一试。提供原创入门练习，也能由家长摆棋、录入正在学的书题，反复练习小妙招。</p>
++          <div class="tags"><span>战术故事</span><span>棋盘练习</span><span>家长录题</span></div>
+         </a>
+       </li>
+ 
