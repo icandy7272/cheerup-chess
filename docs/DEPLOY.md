@@ -45,6 +45,6 @@ HTML 使用 no-cache；当前所有静态资源也采用保守缓存。部署目
 
 ## 主站入口
 
-2026-10-20 已在 cheerup.tech 主页加入淡粉色「小马战术乐园」卡片，位于第三项（Shadow、openGym 之后）。`deploy/homepage-entry.patch` 保留这次入口的源码差异，主站完整页面仍由 `/var/www/cheerup-home/index.html` 管理，不随棋站 release 脚本覆盖。
+2026-10-20 已在 cheerup.tech 主页加入浅绿色「小马战术乐园」卡片，位于第三项（Shadow、openGym 之后）。`deploy/homepage-entry.patch` 保留这次入口的源码差异，主站完整页面仍由 `/var/www/cheerup-home/index.html` 管理，不随棋站 release 脚本覆盖。
 
 主站修改先备份到服务器 `/var/backups/cheerup-home/`，核对原页面摘要后原子替换。以后更改入口时先读取主站当前版本，避免用旧副本覆盖其他卡片。

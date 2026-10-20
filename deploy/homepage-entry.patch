@@ -13,12 +13,12 @@
      .diary  { --accent: var(--diary); }
      .gym    { --accent: var(--gym); }
      .taekwondo { --accent: var(--taekwondo); }
-+    .chess { --accent: #a05b7c; }
-+    .card.chess { background: #fff4f8; border-color: #edd4df; }
-+    .chess .icon::before, .chess .tags span::before { background: #efbdd4; opacity: 0.45; }
++    .chess { --accent: #3d6247; }
++    .card.chess { background: #f5f8ed; border-color: #dce6cf; }
++    .chess .icon::before, .chess .tags span::before { background: #dfecb8; opacity: 0.45; }
 +    @media (prefers-color-scheme: dark) {
-+      .chess { --accent: #edb3cf; }
-+      .card.chess { background: #30232a; border-color: #60404f; }
++      .chess { --accent: #bdd4a1; }
++      .card.chess { background: #263026; border-color: #46583f; }
 +    }
  
      .card {
