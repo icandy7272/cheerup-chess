@@ -7,7 +7,7 @@ export class PuzzleRunner {
     if(this.puzzle.diagram&&(!diagramSquare(from)||!diagramSquare(to)))return {kind:'illegal'};
     let move;try{move=this.chess.move({from,to,promotion});}catch{return {kind:'illegal'};}
     const choices=this.lines.filter(l=>l[this.ply]===move.san);
-    if(!choices.length){this.chess.undo();return {kind:'retry'};}
+    if(!choices.length){this.chess.undo();return {kind:'retry',move};}
     this.lines=choices;this.ply++;
     if(this.lines.every(l=>l.length===this.ply)){this.done=true;return {kind:'complete',move};}
     const reply=this.chess.move(this.lines[0][this.ply]);this.ply++;

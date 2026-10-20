@@ -1,3 +1,4 @@
+import {moveEntry,historyRows,figurineSan} from './history.js';
 import {mergeLibrary,guidingQuestion,loadSharedPuzzles} from './library.js';
 import {lessonBoard,moveDuration} from './lesson-board.js';
 import {playSequence,waitForMove} from './playback.js';
@@ -39,29 +40,62 @@ function chapterPage(id){const ch=chapters.find(c=>c.id===id);if(!ch)return go('
  shell(`<div class="page-intro"><button class="text-btn" data-go="map">← 回到战术地图</button><div class="eyebrow">CHAPTER ${String(id).padStart(2,'0')}</div><h1>${esc(ch.name)} · ${esc(ch.nickname)}</h1><p>先听懂这个小故事，再到棋盘上试一试。</p></div><div class="lesson-layout"><section class="story-card"><span class="story-icon" aria-hidden="true">${ch.icon}</span><h2>${esc(ch.nickname)}</h2><p class="story-text">${esc(ch.story)}</p><div class="motto">${esc(ch.motto)}</div><div class="lesson-actions"><button class="secondary" id="read-story">♫ 听小马讲故事</button>${ps.length?'<button class="primary" id="start-chapter">到棋盘上试一试 →</button>':''}</div><p class="little-note">朗读使用浏览器的中文语音；如果不能发声，请大朋友读一读。</p><section class="lichess-practice" aria-label="Lichess 外部练习"><h3>到 Lichess 再练一练</h3><p>${esc(ch.lichess.note)}</p><div class="lichess-links">${ch.lichess.links.map(link=>`<a class="secondary" href="${esc(link.url)}" target="_blank" rel="noopener noreferrer">${esc(link.label)} ↗</a>`).join('')}</div><small>在新标签页打开。题目可能更难，建议大朋友陪着练；练习进度保存在 Lichess，不计入本站星星。</small></section></section><section class="panel"><h3>${ps.length?'这一课的小挑战':'这一课，先认识妙招'}</h3>${ps.length?`<p>先观察棋盘、聊一聊引导问题，再直接走棋。星星代表完成、借助提示、独立完成的成长。</p><div class="exercise-list">${ps.map((p,i)=>`<button class="exercise-item" data-puzzle="${esc(p.id)}"><span>${String(i+1).padStart(2,'0')}　${esc(p.title)}${p.bookRef?`<small>原书 ${esc(p.bookRef)}</small>`:`<small>${isOriginal(p)?'原创入门变式':'个人录题'} · 可反复练习</small>`}</span><span class="stars" aria-label="${state.progress[p.id]?.stars||0}颗星">${stars(state.progress[p.id]?.stars||0)}</span></button>`).join('')}</div>`:'<p>故事已经准备好，原创练习还在准备中。家长也可以录入这章的书题。</p><button class="secondary" data-go="editor">家长录入书题 →</button>'}</section></div>`);
  $('#read-story').onclick=()=>speak(ch.story+'。记住：'+ch.motto);if(ps.length)$('#start-chapter').onclick=()=>go(`play/${ps.find(p=>!state.progress[p.id])?.id||ps[0].id}`);app.querySelectorAll('[data-puzzle]').forEach(b=>b.onclick=()=>go(`play/${b.dataset.puzzle}`));
 }
-function startPuzzle(id){play?.controller?.abort();play?.board?.destroy();const p=allPuzzles().find(p=>p.id===id);if(!p)return go('map');play={p,runner:new PuzzleRunner(p),selected:null,stage:'move',mistakes:0,hints:0,message:'轮到你啦，点击或拖动棋子开始。',lastMove:null,hintShown:[],saved:false};playPage();}
+function startPuzzle(id){play?.controller?.abort();play?.board?.destroy();const p=allPuzzles().find(p=>p.id===id);if(!p)return go('map');play={p,runner:new PuzzleRunner(p),selected:null,entries:[],reviewIndex:null,annotation:null,stage:'move',mistakes:0,hints:0,message:'轮到你啦，点击或拖动棋子开始。',lastMove:null,hintShown:[],saved:false};playPage();}
+function moveHistory(x){
+ const cell=index=>{if(index===undefined)return '<span class="move-empty">…</span>';const e=x.entries[index];return `<button class="move-cell ${e.verdict} ${(x.reviewIndex===index||(x.reviewIndex===null&&index===x.entries.length-1))?'active':''}" data-move-index="${index}" ${x.busy?'disabled':''} aria-label="${e.turn}${e.color==='w'?'白方':'黑方'} ${esc(e.san)} ${e.verdict==='good'?'正确':e.verdict==='fail'?'未符合本题答案':'对手应手'}"><span>${esc(figurineSan(e.san))}</span><b>${e.verdict==='good'?'✓':e.verdict==='fail'?'✗':''}</b></button>`;};
+ return `<section class="move-history" aria-label="行棋记录"><div class="history-heading"><strong>行棋记录</strong><small>${x.reviewIndex!==null?'正在回看 · 棋盘暂停走棋':'点走法可回看'}</small></div><div class="move-table"><div class="move-header"><span>回合</span><span>白方</span><span>黑方</span></div>${historyRows(x.entries).map(row=>`<div class="move-row"><span class="move-number">${row.turn}</span>${cell(row.white)}${cell(row.black)}</div>`).join('')||'<p class="history-empty">走出第一步，这里就会记下来。</p>'}</div><div class="history-controls"><button data-history="first" aria-label="回看初始局面" ${x.busy||!x.entries.length?'disabled':''}>|‹</button><button data-history="prev" aria-label="回看上一步" ${x.busy||!x.entries.length||x.reviewIndex===-1?'disabled':''}>‹</button><button data-history="next" aria-label="回看下一步" ${x.busy||x.reviewIndex===null?'disabled':''}>›</button><button data-history="live" ${x.busy||x.reviewIndex===null?'disabled':''}>回到当前棋局</button></div></section>`;
+}
+function bindMoveHistory(x){
+ app.querySelectorAll('[data-move-index]').forEach(b=>b.onclick=()=>{if(x.busy)return;x.reviewIndex=Number(b.dataset.moveIndex);x.selected=null;playPage();});
+ app.querySelectorAll('[data-history]').forEach(b=>b.onclick=()=>{if(x.busy)return;
+  const action=b.dataset.history;
+  if(action==='first')x.reviewIndex=-1;
+  else if(action==='live')x.reviewIndex=null;
+  else if(action==='prev')x.reviewIndex=Math.max(-1,(x.reviewIndex??(x.entries.length-1))-1);
+  else if(action==='next')x.reviewIndex=x.reviewIndex+1>=x.entries.length?null:x.reviewIndex+1;
+  x.selected=null;playPage();
+ });
+}
 function playPage(){const x=play;const ch=chapters[x.p.chapter-1];const done=x.runner.done&&!x.busy;const st=x.mistakes?1:x.hints?2:3;
- shell(`<div class="play-top"><button class="text-btn" data-go="chapter/${ch.id}">← ${esc(ch.name)}</button><div><h1>${esc(x.p.title)}</h1><small>${x.p.bookRef?'原书 '+esc(x.p.bookRef):isOriginal(x.p)?'原创入门变式':'个人录题'} · ${createPosition(x.p).turn()==='w'?'白':'黑'}方棋盘</small></div><button class="text-btn" id="restart">重新试一试 ↻</button></div><div class="play-layout"><section class="board-wrap">${x.p.diagram?'<div class="diagram-notice">原书 5×5 局部示意图 · 其余棋子未展示，按书中主线练习</div>':''}<div id="board"></div><div class="board-caption"><span>${done?'完成啦！':x.stage==='question'?'先找一找，再走棋':(createPosition(x.p).turn()==='w'?'白方':'黑方')+'走棋 · 点击或拖动棋子'}</span><span>慢慢想，不计时</span></div></section><aside class="coach"><div class="coach-mascot"><span class="mini-horse">♞</span><div><strong>小马陪你想一想</strong><small>每一个发现，都值得一颗星。</small></div></div><div class="step-label">${done?'完成这一题':x.stage==='question'?'第一步 · 发现线索':'试试妙招'}</div><h2>${done?'你找到这个小妙招啦！':x.stage==='question'?'先做一个小侦探。':'轮到你来走棋啦。'}</h2>${done?`<div class="win-stars" aria-label="获得${st}颗星">${stars(st)}</div><p class="instruction">${esc(x.p.explanation)}</p><p class="little-note">${st===3?'独立完成，送你三颗星！':st===2?'借助提示完成，送你两颗星！下次试试自己找。':'坚持完成，先送你一颗星！再来一次，也许能独立发现。'}</p>`:`<p class="instruction">${esc(guidingQuestion(x.p.question))}</p>`}<div class="feedback ${x.retry?'retry':''}" role="status" aria-live="polite">${esc(x.message)}</div>${x.hintShown.length?`<div class="hint-box">💡 ${esc(x.hintShown.at(-1))}</div>`:''}<div class="coach-actions">${done?'<button class="primary" id="next">下一题 →</button><button class="secondary" id="again">再练一次</button>':`<button class="secondary" id="hint">💡 给我一点提示</button><button class="text-btn" id="read-prompt">♫ 读给我听</button>`}</div><p class="little-note">${done?'练习记录已加入本机进度；可以在家长入口备份。':'星星不看速度。点错了没关系，想一想再试。<br>本题按教学目标和录入的答案判断；其他想法可以和大人一起讨论。'}</p></aside></div>`);
- if(x.boardHost)$('#board').replaceWith(x.boardHost);else x.boardHost=$('#board');
- const position=x.displayFen?new Chess(x.displayFen,{skipValidation:true}):x.runner.chess;
+ const body=`<div class="play-top"><button class="text-btn" data-go="chapter/${ch.id}">← ${esc(ch.name)}</button><div><h1>${esc(x.p.title)}</h1><small>${x.p.bookRef?'原书 '+esc(x.p.bookRef):isOriginal(x.p)?'原创入门变式':'个人录题'} · ${createPosition(x.p).turn()==='w'?'白':'黑'}方棋盘</small></div><button class="text-btn" id="restart">重新试一试 ↻</button></div><div class="play-layout"><section class="board-wrap">${x.p.diagram?'<div class="diagram-notice">原书 5×5 局部示意图 · 其余棋子未展示，按书中主线练习</div>':''}<div id="board"></div><div class="board-caption"><span>${done?'完成啦！':x.stage==='question'?'先找一找，再走棋':(createPosition(x.p).turn()==='w'?'白方':'黑方')+'走棋 · 点击或拖动棋子'}</span><span>慢慢想，不计时</span></div></section><aside class="coach"><div class="coach-mascot"><span class="mini-horse">♞</span><div><strong>小马陪你想一想</strong><small>每一个发现，都值得一颗星。</small></div></div><div class="step-label">${done?'完成这一题':x.stage==='question'?'第一步 · 发现线索':'试试妙招'}</div><h2>${done?'你找到这个小妙招啦！':x.stage==='question'?'先做一个小侦探。':'轮到你来走棋啦。'}</h2>${done?`<div class="win-stars" aria-label="获得${st}颗星">${stars(st)}</div><p class="instruction">${esc(x.p.explanation)}</p><p class="little-note">${st===3?'独立完成，送你三颗星！':st===2?'借助提示完成，送你两颗星！下次试试自己找。':'坚持完成，先送你一颗星！再来一次，也许能独立发现。'}</p>`:`<p class="instruction">${esc(guidingQuestion(x.p.question))}</p>`}<div class="feedback ${x.retry?'retry':''}" role="status" aria-live="polite">${esc(x.message)}</div>${x.hintShown.length?`<div class="hint-box">💡 ${esc(x.hintShown.at(-1))}</div>`:''}${moveHistory(x)}<div class="coach-actions">${done?'<button class="primary" id="next">下一题 →</button><button class="secondary" id="again">再练一次</button>':`<button class="secondary" id="hint">💡 给我一点提示</button><button class="text-btn" id="read-prompt">♫ 读给我听</button>`}</div><p class="little-note">${done?'练习记录已加入本机进度；可以在家长入口备份。':'星星不看速度。点错了没关系，想一想再试。<br>本题按教学目标和录入的答案判断；其他想法可以和大人一起讨论。'}</p></aside></div>`;
+ if(x.boardHost&&$('#board')===x.boardHost){
+  const template=document.createElement('template');template.innerHTML=body;
+  $('.coach').replaceWith(template.content.querySelector('.coach'));
+  $('.board-caption').replaceWith(template.content.querySelector('.board-caption'));
+ }else shell(body);
+ if(!x.boardHost)x.boardHost=$('#board');else if($('#board')!==x.boardHost)$('#board').replaceWith(x.boardHost);
+ const reviewing=x.reviewIndex!==null;const fen=reviewing?(x.reviewIndex<0?x.p.fen:x.entries[x.reviewIndex].after):x.displayFen;
+ if(reviewing)$('.board-caption span').textContent='正在回看 · 回到当前棋局后继续走棋';
+ const position=fen?new Chess(fen,{skipValidation:true}):x.runner.chess;
  if(!x.board)x.board=lessonBoard(x.boardHost,position,{orientation:createPosition(x.p).turn(),diagram:!!x.p.diagram,onSquare:playSquare,onMove:(from,to)=>{x.selected=from;playSquare(to);}});
- x.board.update(position,{busy:x.busy,lastMove:x.lastMove,selected:x.selected,done});
- $('#restart').onclick=()=>startPuzzle(x.p.id);if(done){$('#again').onclick=()=>startPuzzle(x.p.id);$('#next').onclick=()=>{const ps=allPuzzles().filter(p=>p.chapter===x.p.chapter);const i=ps.findIndex(p=>p.id===x.p.id);go(i+1<ps.length?`play/${ps[i+1].id}`:`chapter/${x.p.chapter}`);};}else{$('#hint').disabled=!!x.busy;$('#hint').onclick=()=>{if(x.busy)return;x.hints++;x.retry=false;if(x.stage==='question')x.hintShown.push(x.p.hints[0]);else{x.hintShown.push(x.p.hints[Math.min(x.hintShown.length,x.p.hints.length-1)]+`（下一步：${x.runner.nextMove()}）`);const m=position.moves({verbose:true}).find(m=>m.san===x.runner.nextMove());x.selected=m?.from||null;}playPage();};$('#read-prompt').onclick=()=>speak(guidingQuestion(x.p.question)+'。'+x.message);}
+ x.board.update(position,{busy:x.busy||reviewing,lastMove:reviewing?(x.entries[x.reviewIndex]||null):x.lastMove,selected:x.selected,done,annotation:reviewing?(x.entries[x.reviewIndex]&&x.entries[x.reviewIndex].verdict!=='reply'?{square:x.entries[x.reviewIndex].to,verdict:x.entries[x.reviewIndex].verdict}:null):x.annotation});
+ bindMoveHistory(x);
+ $('#restart').onclick=()=>startPuzzle(x.p.id);if(done){$('#again').onclick=()=>startPuzzle(x.p.id);$('#next').onclick=()=>{const ps=allPuzzles().filter(p=>p.chapter===x.p.chapter);const i=ps.findIndex(p=>p.id===x.p.id);go(i+1<ps.length?`play/${ps[i+1].id}`:`chapter/${x.p.chapter}`);};}else{$('#hint').disabled=!!x.busy||reviewing;$('#hint').onclick=()=>{if(x.busy)return;x.hints++;x.retry=false;if(x.stage==='question')x.hintShown.push(x.p.hints[0]);else{x.hintShown.push(x.p.hints[Math.min(x.hintShown.length,x.p.hints.length-1)]+`（下一步：${x.runner.nextMove()}）`);const m=position.moves({verbose:true}).find(m=>m.san===x.runner.nextMove());x.selected=m?.from||null;}playPage();};$('#read-prompt').onclick=()=>speak(guidingQuestion(x.p.question)+'。'+x.message);}
 }
 function promotionDialog(color,callback){const back=document.createElement('div');back.className='dialog-backdrop';back.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-label="选择升变棋子"><h2>小兵到终点啦！变成谁？</h2><div class="promotion-options">${['q','r','b','n'].map(t=>`<button data-promote="${t}" aria-label="${({q:'后',r:'车',b:'象',n:'马'})[t]}">${glyphs[color+t]}</button>`).join('')}</div><button class="secondary" id="cancel-promote">再想想</button></div>`;document.body.append(back);back.querySelectorAll('[data-promote]').forEach(b=>b.onclick=()=>{back.remove();callback(b.dataset.promote);});back.querySelector('#cancel-promote').onclick=()=>{back.remove();if(play)playPage();};back.querySelector('button').focus();}
-function playSquare(square){const x=play;if(x.runner.done||x.busy)return;
+function playSquare(square){const x=play;if(x.runner.done||x.busy||x.reviewIndex!==null)return;
  const c=x.runner.chess;const piece=c.get(square);
  if(piece?.color===c.turn()){x.selected=x.selected===square?null:square;x.retry=false;playPage();return;}
  if(!x.selected){x.message='先点一下你想走的棋子。';x.retry=false;playPage();return;}
  const from=x.selected;
- const submit=async promotion=>{const result=x.runner.play(from,square,promotion);x.selected=null;x.retry=false;
+ const submit=async promotion=>{x.annotation=null;const result=x.runner.play(from,square,promotion);x.selected=null;x.retry=false;
  if(result.kind==='illegal'){x.message='这个棋子不能这样走。换个格子试试吧。';}
  if(result.kind==='retry'){x.mistakes++;x.retry=true;x.message='这是合法走法，不过还没有找到这题的小妙招。再想一想？';}
+ if(result.kind==='retry'){
+  x.entries.push(moveEntry(result.move,'fail'));x.annotation={square:result.move.to,verdict:'fail'};
+  x.busy=true;x.controller=new AbortController();x.displayFen=result.move.after;x.lastMove=result.move;playPage();
+  try{await waitForMove(800,x.controller.signal);}catch{if(x.controller.signal.aborted)return;}
+  x.busy=false;x.displayFen=null;x.annotation=null;playPage();return;
+ }
  if(result.move){
   x.busy=true;x.controller=new AbortController();x.displayFen=result.move.after;
   try{
    await playSequence(result,{signal:x.controller.signal,pause:waitForMove,alreadyMoved:true,
-    show:(fen,phase,move)=>{x.displayFen=fen;x.lastMove=move;x.message=phase.startsWith('reply')?`对手走了：${move.from} → ${move.to}`:'看一看棋子怎么走。';playPage();},
+    show:(fen,phase,move)=>{
+     if(phase==='move'){x.entries.push(moveEntry(move,'good'));x.annotation={square:move.to,verdict:'good'};}
+     if(phase==='reply')x.annotation=null;
+     if(phase==='reply-landed')x.entries.push(moveEntry(move,'reply'));
+     x.displayFen=fen;x.lastMove=move;x.message=phase.startsWith('reply')?`对手走了：${move.from} → ${move.to}`:'看一看棋子怎么走。';playPage();},
     animate:async(move,signal)=>{x.board.move(move);await waitForMove(moveDuration,signal);}});
   }catch(error){if(x.controller.signal.aborted)return;throw error;}
   x.busy=false;x.displayFen=null;

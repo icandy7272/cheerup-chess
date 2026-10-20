@@ -1,3 +1,4 @@
+import {feedbackShapes} from './history.js';
 import {Chessground} from '@lichess-org/chessground';
 import '@lichess-org/chessground/assets/chessground.base.css';
 import '@lichess-org/chessground/assets/chessground.cburnett.css';
@@ -20,7 +21,7 @@ export function lessonBoard(host,chess,{orientation,diagram,onMove,onSquare}){
   animation:{enabled:!matchMedia('(prefers-reduced-motion: reduce)').matches,duration:moveDuration},
   movable:{free:false,color:color(chess.turn()),dests:legalDestinations(chess,diagram),rookCastle:false,events:{after:onMove}},
   premovable:{enabled:false},draggable:{enabled:true,showGhost:true},selectable:{enabled:true},
-  drawable:{enabled:false},disableContextMenu:true,blockTouchScroll:true,
+  drawable:{enabled:true,eraseOnMovablePieceClick:true},disableContextMenu:true,blockTouchScroll:true,
  });
  const access=document.createElement('div');access.className='board-access';host.append(access);
  const files=diagram?(orientation==='b'?'hgfed':'defgh'):(orientation==='b'?'hgfedcba':'abcdefgh');
@@ -30,8 +31,8 @@ export function lessonBoard(host,chess,{orientation,diagram,onMove,onSquare}){
   for(const [i,rank] of ranks.entries()){const label=document.createElement('span');label.className='crop-rank';label.textContent=rank;label.style.top=`${i*20+1}%`;host.append(label);}
  }
  return {
-  update(position,{busy,lastMove,selected,done}){
-   ground.set({fen:position.fen(),turnColor:color(position.turn()),lastMove:lastMove?[lastMove.from,lastMove.to]:[],
+  update(position,{busy,lastMove,selected,done,annotation}){
+   ground.set({...(ground.getFen()!==position.fen().split(' ')[0]?{fen:position.fen()}:{}),check:position.isCheck(),drawable:{autoShapes:feedbackShapes(annotation,{orientation,diagram})},turnColor:color(position.turn()),lastMove:lastMove?[lastMove.from,lastMove.to]:[],
     movable:{color:busy||done?undefined:color(position.turn()),dests:busy||done?new Map():legalDestinations(position,diagram)},
     draggable:{enabled:!busy&&!done},selectable:{enabled:!busy&&!done}});
    access.replaceChildren();
