@@ -12,7 +12,13 @@ export async function loadSharedPuzzles(fetcher,originals){
  const response=await fetcher('/site-data/puzzles.json',{cache:'no-cache',signal:AbortSignal.timeout(8000)});
  if(response.status===404)return [];
  if(!response.ok)throw Error('云端书题暂时无法加载，请刷新重试。');
- const body=await response.text();if(new TextEncoder().encode(body).length>2*1024*1024)throw Error('云端题目文件过大。');
+ const body=await response.text();if(new TextEncoder().encode(body).length>10*1024*1024)throw Error('云端题目文件过大。');
  const data=JSON.parse(body);
- return validatePuzzles(data.puzzles,originals.map(p=>p.id));
+ if(!Array.isArray(data.puzzles)||data.puzzles.length>5000)throw Error('云端题库格式不正确。');
+ const result=[],ids=originals.map(p=>p.id);
+ for(let i=0;i<data.puzzles.length;i+=500){
+  const batch=validatePuzzles(data.puzzles.slice(i,i+500),ids);
+  result.push(...batch);ids.push(...batch.map(p=>p.id));
+ }
+ return result;
 }

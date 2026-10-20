@@ -19,3 +19,10 @@ test('shared loader validates answers, handles absent local deployment, and reje
  await assert.rejects(loadSharedPuzzles(async()=>new Response('',{status:500}),puzzles));
  await assert.rejects(loadSharedPuzzles(async()=>new Response(JSON.stringify({puzzles:[{...example,lines:[['???']]}]})),puzzles));
 });
+test('cloud library supports an entire book beyond the personal import batch limit',async()=>{
+ const rows=Array.from({length:501},(_,i)=>({...puzzles[0],id:'cloud-'+i}));
+ const fetcher=async()=>new Response(JSON.stringify({puzzles:rows}));
+ assert.equal((await loadSharedPuzzles(fetcher,puzzles)).length,501);
+ rows[500].id=rows[0].id;
+ await assert.rejects(loadSharedPuzzles(fetcher,puzzles),/题号重复/);
+});
