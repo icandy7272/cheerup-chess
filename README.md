@@ -78,7 +78,7 @@ HTTP 静态托管服务器仍可能记录普通访问日志；浏览器语音由
 
 欢迎提交改善儿童解释、界面可用性和棋题准确性的 PR。新题需原创或有明确再分发授权，必须标注来源，并通过合法走法测试。不要提交孩子资料、个人备份、书籍扫描件或没有授权的全书题库。
 
-代码：MIT。原创故事与题目：CC BY 4.0，见 [内容许可](CONTENT-LICENSE.md)。依赖 chess.js：BSD-2-Clause；Vite：MIT。
+完整应用：GPL-3.0-or-later（原有代码另保留 MIT 授权）。原创故事与题目：CC BY 4.0，见 [内容许可](CONTENT-LICENSE.md)。依赖 chess.js：BSD-2-Clause；Vite：MIT。
 
 ## Lichess 延伸练习
 
@@ -89,3 +89,10 @@ HTTP 静态托管服务器仍可能记录普通访问日志；浏览器语音由
 练习棋盘直接复用 [Lichess Chessground](https://github.com/lichess-org/chessground)，提供点击、拖动、合法落点和走子动画。原书 5×5 示意图通过裁剪显示，棋子坐标和走法判断仍使用真实棋盘。题目规则由 chess.js 和本项目答案判断器负责。
 
 包含 Chessground 的完整应用按 GPL-3.0-or-later 发布，见 LICENSE 和 THIRD_PARTY_NOTICES.md；原有代码的 MIT 授权保留在 LICENSE-MIT。家长摆棋编辑器暂保留原有棋盘。
+
+
+## 服务器托管题目
+
+部署时可在服务器 `/var/www/cheerup-chess/shared/site-data/puzzles.json` 放置单独管理的 `{ "puzzles": [...] }` 文件。发布脚本在每个静态版本中建立链接，前端启动时读取并验证；这些内容不进入 Git、构建产物或公开原创题库。该文件通过本站公开读取，适合站点管理者明确提供给访客的练习内容。没有文件时只使用内置题和本机录题。
+
+云端题目以稳定 ID 与本机录题合并去重，本机同 ID 修改优先。学习进度仍保存在各自浏览器，云端题目不会覆盖进度。自己在编辑器录入的题目不会自动上传。引导问题保留为观察和讨论提示，走棋不需要先点击引导答案。
