@@ -1,4 +1,5 @@
 import {Chess} from 'chess.js';
+import {lichessPractice} from './lichess.js';
 const stories=[
  ['消除保护','找到小守卫','🛡️','小马想吃一个兵，可是旁边的守卫会把小马吃掉。我们先解决守卫，再去吃目标。','先解决守卫，再去吃目标。'],
  ['引离','请守卫让一让','🪁','守卫正在保护朋友。我们给它出一道必须处理的难题，让它离开原来的位置。它一离开，后面的目标就露出来了。','把守卫引开，目标露出来。'],
@@ -17,7 +18,7 @@ const stories=[
  ['长将（长捉）','一直有事要处理','🔁','我们不断将军，对方的王一直要躲；或者我们不断攻击一个棋子，它一直要逃。若形成重复局面，可能争取到平局。不是将军三次就自动平局哦。','一直将，一直追，看看能否重复。'],
  ['战术组合','妙招手拉手','🧩','先用一个妙招做准备，再接上下一个。比如先把王引到好位置，再让小马同时攻击王和后。每一步，都先想想对方会怎么回答。','想好它的回答，把妙招接起来。']
 ];
-export const chapters=stories.map(([name,nickname,icon,story,motto],i)=>({id:i+1,name,nickname,icon,story,motto}));
+export const chapters=stories.map(([name,nickname,icon,story,motto],i)=>({id:i+1,name,nickname,icon,story,motto,lichess:lichessPractice[i]}));
 const mirror=s=>String.fromCharCode(104-(s.charCodeAt(0)-97))+s[1];
 function make(chapter,variant,pieces,moves,answers,question,hints,explanation){
  const flip=variant>=3;const sq=s=>flip?mirror(s):s;const c=new Chess();c.clear();
