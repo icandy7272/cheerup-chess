@@ -17,7 +17,7 @@ export function validatePuzzles(input,existingIds=[]){
   if(p.diagram===true&&!p.answers.every(diagramSquare))fail('引导答案必须在 d4～h8 局部棋盘内。');
   const nodes=new Map();
   for(const line of p.lines){
-   if(!Array.isArray(line)||!line.length||line.length>31||line.length%2!==1)fail('解答必须以孩子的一步结束，最多 31 个半回合。');
+   if(!Array.isArray(line)||!line.length||line.length>31)fail('解答需要 1～31 个半回合。');
    let c;try{c=createPosition(p);}catch{fail('起始局面不合法。');}
    // Side not to move must not already be in check.
    const fields=c.fen().split(' ');fields[1]=fields[1]==='w'?'b':'w';fields[3]='-';

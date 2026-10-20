@@ -11,7 +11,8 @@ export class PuzzleRunner {
     this.lines=choices;this.ply++;
     if(this.lines.every(l=>l.length===this.ply)){this.done=true;return {kind:'complete',move};}
     const reply=this.chess.move(this.lines[0][this.ply]);this.ply++;
-    return {kind:'correct',move,reply};
+    this.done=this.lines.every(l=>l.length===this.ply);
+    return {kind:this.done?'complete':'correct',move,reply};
   }
   nextMove(){return this.lines[0][this.ply];}
 }
