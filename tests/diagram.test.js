@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validatePuzzles} from '../src/import.js';
+import {PuzzleRunner} from '../src/runner.js';
+import {parseBackup} from '../src/storage.js';
+const example={id:'original-diagram-demo',chapter:1,title:'局部教学示例',fen:'7k/8/8/4n3/4RQ2/8/8/8 w - - 0 1',diagram:true,lines:[['Rxe5','Kh7','Qh6+']],question:'找一找 e5 的黑马。',answers:['e5'],hints:['先用车吃掉黑马。'],explanation:'先吃马，再让后将军。',source:'原创测试示例'};
+test('explicit local diagrams allow an omitted white king and survive backup',()=>{const [p]=validatePuzzles([example]);assert.equal(p.diagram,true);const restored=parseBackup(JSON.stringify({version:1,progress:{},puzzles:[p]}));assert.equal(restored.puzzles[0].diagram,true);const r=new PuzzleRunner(p);assert.equal(r.play('e4','e5').kind,'correct');assert.equal(r.play('f4','h6').kind,'complete');assert.equal(r.chess.get('a1'),undefined);r.reset();assert.equal(r.chess.fen(),p.fen);});
+test('normal puzzles still require both kings',()=>assert.throws(()=>validatePuzzles([{...example,diagram:false}])));
+test('diagram validation rejects extra kings, edge pawns and hidden pieces',()=>{for(const fen of ['6kk/8/8/4n3/4RQ2/8/8/8 w - - 0 1','6Pk/8/8/4n3/4RQ2/8/8/8 w - - 0 1','7k/8/8/4n3/4RQ2/8/8/R7 w - - 0 1'])assert.throws(()=>validatePuzzles([{...example,fen}]),fen);});
+test('diagram moves and scaffold answers must stay in displayed 5x5 region',()=>{assert.throws(()=>validatePuzzles([{...example,lines:[['Ra4']]}]));assert.throws(()=>validatePuzzles([{...example,answers:['a1']}]));const r=new PuzzleRunner(example);assert.equal(r.play('e4','a4').kind,'illegal');assert.equal(r.ply,0);});
