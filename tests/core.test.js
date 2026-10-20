@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { PuzzleRunner } from '../src/runner.js';
+import { validatePuzzles } from '../src/import.js';
+import { recordResult, reviewQueue, parseBackup } from '../src/storage.js';
+const puzzle={id:'test',chapter:1,title:'先吃守卫',fen:'6k1/8/8/3r4/3p4/8/6B1/3R2K1 w - - 0 1',lines:[['Bxd5+','Kf8','Rxd4']],question:'谁保护着 d4 的兵？',answers:['d5'],hints:['看 d5 的车'],explanation:'先吃车，再吃兵。',source:'原创'};
+test('illegal or wrong move keeps board and progress unchanged',()=>{const r=new PuzzleRunner(puzzle);const before=r.chess.fen();assert.equal(r.play('g2','g3').kind,'illegal');assert.equal(r.play('g2','f3').kind,'retry');assert.equal(r.chess.fen(),before);assert.equal(r.ply,0);});
+test('correct move triggers reply and only full solution completes',()=>{const r=new PuzzleRunner(puzzle);assert.equal(r.play('g2','d5').kind,'correct');assert.equal(r.ply,2);assert.equal(r.chess.get('f8').type,'k');assert.equal(r.play('d1','d4').kind,'complete');assert.equal(r.done,true);r.reset();assert.equal(r.ply,0);});
+test('validates entire lines, rejects illegal answers and duplicate IDs',()=>{assert.equal(validatePuzzles([puzzle]).length,1);assert.throws(()=>validatePuzzles([{...puzzle,lines:[['Bxd5+','Kh8','Rd8']]}]));assert.throws(()=>validatePuzzles([puzzle,puzzle]));assert.throws(()=>validatePuzzles([{...puzzle,lines:[['Bxd5+'],['Bxd5+','Kf8','Rxd4']]}]));});
+test('supports explicit alternative correct moves',()=>{const p={...puzzle,lines:[['Bxd5+','Kf8','Rxd4'],['Bxd5+','Kf8','Rd3']]};const r=new PuzzleRunner(p);r.play('g2','d5');assert.equal(r.play('d1','d3').kind,'complete');});
+test('review keeps strongest stars and schedules mistakes/hints',()=>{let s={};s=recordResult(s,'test',{mistakes:1,hints:1},100);assert.equal(s.test.stars,1);assert.equal(reviewQueue(s,101).length,0);assert.deepEqual(reviewQueue(s,100+86400000),['test']);s=recordResult(s,'test',{mistakes:0,hints:0},200);assert.equal(s.test.stars,3);assert.equal(s.test.attempts,2);});
+test('backup validates shape and all imported puzzles before restoration',()=>{const good={version:1,progress:{},puzzles:[puzzle]};assert.equal(parseBackup(JSON.stringify(good)).puzzles.length,1);assert.throws(()=>parseBackup('{'));assert.throws(()=>parseBackup(JSON.stringify({...good,progress:{test:{stars:99}}})));});

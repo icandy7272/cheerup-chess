@@ -1,0 +1,28 @@
+{
+  "puzzles": [
+    {
+      "id": "family-001",
+      "chapter": 1,
+      "title": "认识妙招",
+      "fen": "6k1/8/8/3r4/3p4/8/6B1/3R2K1 w - - 0 1",
+      "lines": [
+        [
+          "Bxd5+",
+          "Kf8",
+          "Rxd4"
+        ]
+      ],
+      "question": "谁在保护 d4 的黑兵？点一点那个守卫。",
+      "answers": [
+        "d5"
+      ],
+      "hints": [
+        "沿着 d4 往上看，找到黑车。",
+        "先用象吃掉 d5 的守卫，再用车吃兵。"
+      ],
+      "explanation": "象先吃掉 d5 的守卫。黑王躲开将军后，白车就能吃掉 d4 的兵。",
+      "source": "CheerUp Chess 原创 · 同主题变式练习",
+      "bookRef": "个人录题示例"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Chess} from 'chess.js';
+import {puzzles} from '../src/content.js';
+import {validatePuzzles} from '../src/import.js';
+import {parseBackup,recordResult,loadState,saveState,reviewQueue} from '../src/storage.js';
+import {recordingFen} from '../src/editor.js';
+const p=puzzles[0];
+test('reserved IDs cannot impersonate existing progress',()=>{for(const id of ['constructor','toString','__proto__','hasOwnProperty'])assert.throws(()=>validatePuzzles([{...p,id}]),id);});
+test('invalid and conflicting opponent branches are rejected',()=>{assert.throws(()=>validatePuzzles([{...p,lines:[['Bxd5+','Kf8','Rxd4'],['Bxd5+','Kh8','Rxd4']]}]));assert.throws(()=>validatePuzzles([{...p,lines:[['Bxd5+','Kf8','Rxd4'],['Bxd5+']]}]));});
+test('backups reject reserved progress keys and preserve exact data',()=>{const progress=recordResult({},p.id,{mistakes:0,hints:1},100);const data={version:1,puzzles:[p],progress};assert.deepEqual(parseBackup(JSON.stringify(data)),data);assert.throws(()=>parseBackup(JSON.stringify({version:1,puzzles:[],progress:{constructor:progress[p.id]}})));});
+test('total library limit and backup byte limit are consistent',()=>{const list=Array.from({length:501},(_,i)=>({...p,id:'copy-'+i}));assert.throws(()=>parseBackup(JSON.stringify({version:1,progress:{},puzzles:list})));assert.throws(()=>parseBackup(' '.repeat(3000001)));});
+test('storage denial never throws and failed reads leave original storage untouched',()=>{let written=false;const store={getItem(){throw Error('blocked');},setItem(){written=true;throw Error('quota');}};assert.ok(loadState(store).error);assert.equal(written,false);assert.equal(saveState(store,{version:1,puzzles:[],progress:{}}),false);});
+test('recording preserves loaded castling and en passant rights until setup changes',()=>{const castle=new Chess('r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');assert.equal(recordingFen(castle,'w',false).split(' ')[2],'KQkq');assert.equal(recordingFen(castle,'w',true).split(' ')[2],'-');const ep=new Chess('6k1/8/8/3pP3/8/8/8/6K1 w - d6 0 1');assert.equal(recordingFen(ep,'w',false).split(' ')[3],'d6');});
+test('underpromotion is accepted as authored',async()=>{const {PuzzleRunner}=await import('../src/runner.js');const r=new PuzzleRunner({...p,fen:'7k/P7/8/8/8/8/8/7K w - - 0 1',lines:[['a8=N']]});assert.equal(r.play('a7','a8','q').kind,'retry');assert.equal(r.play('a7','a8','n').kind,'complete');});
+test('backup limit counts UTF-8 bytes rather than Chinese character count',()=>{const raw=JSON.stringify({version:1,progress:{},puzzles:[],padding:'棋'.repeat(1000001)});assert.ok(raw.length<3000000);assert.throws(()=>parseBackup(raw));});
