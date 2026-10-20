@@ -9,21 +9,19 @@
    <meta name="color-scheme" content="light dark">
    <meta name="theme-color" content="#f5f1ea" media="(prefers-color-scheme: light)">
    <meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
-@@ -120,6 +120,13 @@
+@@ -120,6 +120,11 @@
      .diary  { --accent: var(--diary); }
      .gym    { --accent: var(--gym); }
      .taekwondo { --accent: var(--taekwondo); }
 +    .chess { --accent: #3d6247; }
-+    .card.chess { background: #f5f8ed; border-color: #dce6cf; }
 +    .chess .icon::before, .chess .tags span::before { background: #dfecb8; opacity: 0.45; }
 +    @media (prefers-color-scheme: dark) {
 +      .chess { --accent: #bdd4a1; }
-+      .card.chess { background: #263026; border-color: #46583f; }
 +    }
  
      .card {
        display: flex;
-@@ -277,6 +284,7 @@
+@@ -277,6 +282,7 @@
        .grid li:nth-child(4) { animation-delay: 0.24s; }
        .grid li:nth-child(5) { animation-delay: 0.30s; }
        .grid li:nth-child(6) { animation-delay: 0.36s; }
@@ -31,7 +29,7 @@
      }
  
      @media (prefers-reduced-motion: reduce) {
-@@ -301,7 +309,7 @@
+@@ -301,7 +307,7 @@
          cheerup.tech
        </p>
        <h1>几个小工具，都在这里</h1>
@@ -40,7 +38,7 @@
      </header>
  
      <ul class="grid" role="list">
-@@ -330,6 +338,20 @@
+@@ -330,6 +336,20 @@
            <h2>openGym 训练日志</h2>
            <p class="desc">按推、拉、腿安排训练，逐组记录负重、次数和剩余余力，配合组间休息倒计时查看训练历史。电脑和手机登录同一账户，接着记录。</p>
            <div class="tags"><span>推 / 拉 / 腿</span><span>逐组记录 · RIR</span><span>休息倒计时</span></div>
