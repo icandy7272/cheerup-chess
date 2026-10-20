@@ -24,7 +24,7 @@ GitHub public repository: https://github.com/icandy7272/cheerup-chess
 
 Tencent Cloud: existing Ubuntu/nginx host; isolated root `/var/www/cheerup-chess/current`, versioned release directories, isolated `chess.cheerup.tech` server block. Existing unrelated site configurations were not edited.
 
-Dedicated Let's Encrypt certificate issued for chess.cheerup.tech; expires 2027-01-18, existing Certbot automatic renewal and nginx reload hook remain enabled. HTTPS returned 200 with matching certificate and configured security headers. GitHub initial CI passed.
+Dedicated Let's Encrypt certificate issued for chess.cheerup.tech; expires 2027-01-18, existing Certbot automatic renewal and nginx reload hook remain enabled. HTTPS returned 200 with matching certificate and configured security headers. GitHub initial and final application CI passed. Every deployed file was downloaded over HTTPS and compared byte-for-byte with the production build. Existing cheerup.tech and taekwondo.cheerup.tech both returned 200 after deployment. The production first exercise was completed in-browser with three stars; the browser captured no error logs. Tablet layout at 1024 px and mobile layout at 390 px fit without horizontal overflow.
 
 ## Limits
 
