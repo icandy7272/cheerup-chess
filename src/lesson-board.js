@@ -2,7 +2,8 @@ import {feedbackShapes} from './history.js';
 import {Chessground} from '@lichess-org/chessground';
 import '@lichess-org/chessground/assets/chessground.base.css';
 import '@lichess-org/chessground/assets/chessground.cburnett.css';
-export const moveDuration=420;
+import {moveDuration} from './playback.js';
+export {moveDuration} from './playback.js';
 export function legalDestinations(chess,diagram=false){
  const dests=new Map();
  for(const m of chess.moves({verbose:true})){
@@ -21,7 +22,7 @@ export function lessonBoard(host,chess,{orientation,diagram,onMove,onSquare}){
   animation:{enabled:!matchMedia('(prefers-reduced-motion: reduce)').matches,duration:moveDuration},
   movable:{free:false,color:color(chess.turn()),dests:legalDestinations(chess,diagram),rookCastle:false,events:{after:onMove}},
   premovable:{enabled:false},draggable:{enabled:true,showGhost:true},selectable:{enabled:true},
-  drawable:{enabled:true,eraseOnMovablePieceClick:true},disableContextMenu:true,blockTouchScroll:true,
+  drawable:{enabled:true,eraseOnMovablePieceClick:true},disableContextMenu:true,
  });
  const access=document.createElement('div');access.className='board-access';host.append(access);
  const files=diagram?(orientation==='b'?'hgfed':'defgh'):(orientation==='b'?'hgfedcba':'abcdefgh');

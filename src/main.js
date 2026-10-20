@@ -1,7 +1,7 @@
 import {moveEntry,historyRows,figurineSan} from './history.js';
 import {mergeLibrary,guidingQuestion,loadSharedPuzzles} from './library.js';
 import {lessonBoard,moveDuration} from './lesson-board.js';
-import {playSequence,waitForMove} from './playback.js';
+import {playSequence,waitForMove,retryDuration} from './playback.js';
 import {Chess} from 'chess.js';
 import {chapters,puzzles as originals} from './content.js';
 import {PuzzleRunner} from './runner.js';
@@ -84,7 +84,7 @@ function playSquare(square){const x=play;if(x.runner.done||x.busy||x.reviewIndex
  if(result.kind==='retry'){
   x.entries.push(moveEntry(result.move,'fail'));x.annotation={square:result.move.to,verdict:'fail'};
   x.busy=true;x.controller=new AbortController();x.displayFen=result.move.after;x.lastMove=result.move;playPage();
-  try{await waitForMove(800,x.controller.signal);}catch{if(x.controller.signal.aborted)return;}
+  try{await waitForMove(retryDuration,x.controller.signal);}catch{if(x.controller.signal.aborted)return;}
   x.busy=false;x.displayFen=null;x.annotation=null;playPage();return;
  }
  if(result.move){

@@ -14,5 +14,5 @@ test('cancelling while waiting prevents opponent playback',async()=>{
 test('native board movement is not rewound or animated twice',async()=>{
  const events=[];const a={before:'a',after:'b'},b={before:'b',after:'c'};
  await playSequence({move:a,reply:b},{alreadyMoved:true,show:fen=>events.push(fen),animate:async()=>events.push('reply animation'),pause:async ms=>events.push(ms)});
- assert.deepEqual(events,['b',420,'b',450,'b','reply animation','c']);
+ assert.deepEqual(events,['b',250,'b',125,'b','reply animation','c']);
 });

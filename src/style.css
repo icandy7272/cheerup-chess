@@ -3,7 +3,7 @@
 .chessboard.diagram-board{grid-template-columns:repeat(5,1fr)}.diagram-notice{font-size:12px;line-height:1.7;color:#697a5d;background:#eef2e3;border-radius:10px;padding:10px 12px;margin-bottom:12px}.diagram-board .piece{font-size:clamp(40px,7vw,78px)}@media(max-width:760px){.diagram-board .piece{font-size:clamp(36px,12vw,72px)}}
 
 /* Chessground owns piece placement, dragging and animations. */
-.lesson-board{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:9px;touch-action:none;user-select:none}
+.lesson-board{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:9px;user-select:none}
 .lesson-board>.cg-wrap{position:absolute;width:100%;height:100%}
 .lesson-board.cropped-board>.cg-wrap{width:160%;height:160%;left:-60%;top:0}
 .lesson-board.cropped-board.black-view>.cg-wrap{left:0;top:-60%}
