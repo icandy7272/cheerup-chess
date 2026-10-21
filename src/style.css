@@ -31,3 +31,5 @@
 .history-empty{font-size:13px;padding:10px 12px;margin:0;color:#777d70}.history-controls{display:flex;gap:3px;padding:6px;border-top:1px solid #e4e6dc}.history-controls button{padding:6px 10px;font-size:13px}.history-controls button:last-child{margin-left:auto}
 
 .move-cell:disabled{opacity:1}.lesson-board coords.ranks coord{transform:none;box-sizing:border-box;padding-top:4px}.lesson-board coords.files coord{text-align:right;padding-right:4px}
+
+.story-question{border-left:3px solid var(--lime);padding:2px 0 2px 16px;margin:0 0 22px;color:var(--green)}.story-question strong{font-size:14px}.story-question p{font-size:16px;line-height:1.8;margin:8px 0 0}

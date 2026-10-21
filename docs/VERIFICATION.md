@@ -28,4 +28,8 @@ Dedicated Let's Encrypt certificate issued for chess.cheerup.tech; expires 2027-
 
 ## Limits
 
-Exercises judge explicit authored solutions, not arbitrary engine equivalence. No complete original book collection, photo recognition, account synchronization or practice content for chapters 5–16 is included. The 24 built-in exercises are four themes with six variants each. Browser/system Chinese speech availability depends on the device; audio output was not independently measured. Real-device touch hardware was not tested; responsive layout and browser click behavior were checked.
+Exercises judge explicit authored solutions, not arbitrary engine equivalence. The full book is still being transcribed into separately managed server data. Account synchronization and a general photo-recognition importer are not included. The 96 built-in exercises cover all sixteen themes with six variants each. Browser/system Chinese speech availability depends on the device; audio output was not independently measured. Real-device touch hardware was not tested; responsive layout and browser click behavior were checked.
+
+## 2026-10-21 — all chapter starters and stories
+
+All sixteen chapters now include six original starter variations (96 total), a concrete short story, a memory phrase and a parent discussion question. The suite has 43 passing tests, including all authored lines and runner completion, actual blocking/checkmates, actual stalemate, third repetition, promotion and final capture safety. Some starter lessons illustrate an explicitly labeled response branch rather than claiming a forced result against every defense.
