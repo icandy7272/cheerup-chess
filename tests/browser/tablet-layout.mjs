@@ -35,6 +35,24 @@ try{
   await page.goto(`${base}/#play/original-1-1`);await page.locator('cg-board').waitFor();
   await inside(page,'#board');await inside(page,'#hint');await inside(page,'.instruction');
   const initial=await page.locator('#board').boundingBox();
+  if(width===1024&&height===680)assert.ok(initial.width>=600,'approved B board should be at least 600px');
+  assert.equal(await page.locator('.play-shell>header').isVisible(),false,'large header should collapse');
+  await page.getByRole('button',{name:'更多选项',exact:true}).tap();
+  await inside(page,'.practice-menu nav');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.practice-menu').getAttribute('open'),null);
+  await page.getByRole('button',{name:'更多选项',exact:true}).tap();
+  await page.locator('.play-top h1').tap();
+  assert.equal(await page.locator('.practice-menu').getAttribute('open'),null,'outside tap closes menu');
+  if(width===1024&&height===680){
+   for(const route of ['review','parent']){
+    await page.getByRole('button',{name:'更多选项',exact:true}).tap();
+    await page.locator(`.practice-menu [data-go="${route}"]`).tap();
+    await page.waitForURL(`**/#${route}`);await page.locator('.shell>header').waitFor({state:'visible'});
+    assert.equal(await page.locator('.play-shell').count(),0);
+    await page.goto(`${base}/#play/original-1-1`);await page.locator('cg-board').waitFor();
+   }
+  }
   await solve(page,puzzles.find(p=>p.id==='original-1-1'));
   await inside(page,'#board');await inside(page,'#next');await inside(page,'#again');
   assert.deepEqual(await page.locator('#board').boundingBox(),initial,'board moved on completion');
@@ -52,7 +70,8 @@ try{
   await inside(page,'#board');await inside(page,'#next');
   assert.equal(await page.evaluate(()=>scrollY===0&&document.documentElement.scrollHeight<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1),true,'document needs scrolling');
   await page.locator('#next').tap();await page.waitForURL('**/#play/original-15-2');await page.locator('#hint').waitFor();await inside(page,'#board');await inside(page,'#hint');
-  await page.getByRole('button',{name:'战术地图',exact:true}).tap();await page.locator('.hero').waitFor();
+  await page.getByRole('button',{name:'更多选项',exact:true}).tap();
+  await page.locator('.practice-menu').getByRole('button',{name:'战术地图',exact:true}).tap();await page.locator('.hero').waitFor();
   assert.equal(await page.locator('.play-shell').count(),0,'practice layout leaked to map');
   assert.deepEqual(errors,[]);await page.close();
   console.log(`${process.env.BROWSER||'chromium'} ${width}x${height}: touch moves, complete/next, long history, rotate, exit passed`);

@@ -37,51 +37,63 @@
 .difficulty-tag{display:inline-block;font-size:.8rem;font-weight:600;padding:.18rem .5rem;border:1px solid var(--border,#dedbd2);border-radius:8px;white-space:nowrap;margin-left:.4rem;color:inherit}
 #chapter-score{font:inherit;padding:.45rem .8rem;border:1px solid #dedbd2;border-radius:8px;background:white;color:#333;margin:.5rem}
 
-/* Keep tablet practice inside Safari's visible viewport, including its toolbars. */
+/* Compact tools are available in the viewport-fit tablet practice layout. */
+.practice-tools{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.practice-menu,.restart-short,.coach-title-short{display:none}
 @media (min-width:768px){
- .play-shell{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:0 20px 12px}
- .play-shell>header{flex:0 0 60px;padding:8px 0;gap:12px;min-height:0}
- .play-shell .brand-icon{width:40px;height:40px;font-size:28px;border-radius:12px}
- .play-shell .brand-name{font-size:16px}.play-shell .brand-sub{font-size:9px;margin-top:2px}
- .play-shell .nav-btn{padding:10px 12px}.play-shell .parent-nav{margin-left:4px}
+ .play-shell{--practice-offset:64px;height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:none;padding:0 12px 10px}
+ .play-shell>header,.play-shell>footer{display:none}
  .play-shell>main{display:flex;flex-direction:column;flex:1;min-height:0}
- .play-shell>footer{display:none}
- .play-shell .play-top{flex:0 0 70px;padding:10px 0;gap:14px;min-height:0}
+ .play-shell .play-top{flex:0 0 54px;padding:4px 0;gap:10px;min-height:0}
  .play-shell .play-top>div{min-width:0;text-align:center}
- .play-shell .play-top h1{font-size:17px;line-height:1.4}
- .play-shell .play-top small{font-size:10px;line-height:1.4}
- .play-shell .play-top>.text-btn{flex-shrink:0;min-height:44px}
- .play-shell .play-layout{flex:1;min-height:0;grid-template-columns:minmax(0,1.15fr) minmax(300px,1fr);gap:20px;margin:0;align-items:stretch}
- .play-shell .board-wrap{align-self:start;justify-self:center;width:100%;max-width:calc(100vh - 172px);max-width:calc(100dvh - 172px);padding:10px;border-radius:16px}
- .play-shell .board-wrap:has(.diagram-notice){max-width:calc(100vh - 224px);max-width:calc(100dvh - 224px)}
- .play-shell .diagram-notice{font-size:11px;padding:6px 8px;margin-bottom:8px}
- .play-shell .board-caption{padding:8px 0 0;font-size:10px;gap:6px;line-height:16px}
- .play-shell .coach{display:flex;flex-direction:column;min-height:0;padding:0;overflow:hidden}
- .play-shell .coach-content{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 20px 10px;scrollbar-gutter:stable}
- .play-shell .coach-actions{flex-shrink:0;padding:12px 20px;border-top:1px solid var(--line);background:#fffef9;gap:10px}
- .play-shell .coach-actions button{min-height:48px}.play-shell #next{flex:1;font-size:17px}
- .play-shell .coach-mascot{margin-bottom:12px}.play-shell .mini-horse{width:40px;height:40px;font-size:28px}
- .play-shell .coach h2{font-size:22px;line-height:1.4;margin:10px 0}
- .play-shell .coach .instruction{font-size:16px;line-height:1.7;min-height:0;margin:10px 0}
- .play-shell .feedback{padding:10px 12px;margin:12px 0;min-height:0;font-size:13px;line-height:1.7}
- .play-shell .hint-box{padding:10px 12px;margin:10px 0;font-size:13px}
- .play-shell .win-stars{font-size:34px;letter-spacing:7px;margin:10px 0}
- .play-shell .little-note{margin:10px 0;font-size:10px}
- .play-shell .move-history{margin:12px 0}.play-shell .history-heading{padding:8px 10px;font-size:14px}
- .play-shell .move-table{max-height:150px}.play-shell .move-cell{padding:8px 10px;font-size:16px;min-height:40px}
- .play-shell .history-controls button{min-height:40px}
+ .play-shell .play-top h1{font-size:18px;line-height:1.4;margin:0}
+ .play-shell .play-top small{display:none}
+ .play-shell .play-top>.text-btn,.play-shell #restart{flex-shrink:0;min-height:44px;padding:8px 10px;font-size:14px}
+ .play-shell .restart-full,.play-shell .coach-title-full{display:none}
+ .play-shell .restart-short,.play-shell .coach-title-short{display:inline}
+ .practice-menu{display:block;position:relative;z-index:30}
+ .practice-menu summary{display:grid;place-items:center;list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;width:44px;min-height:44px;font-size:24px;color:var(--muted)}
+ .practice-menu summary::-webkit-details-marker{display:none}
+ .practice-menu summary:focus-visible{outline:3px solid #d67b40;outline-offset:2px}
+ .practice-menu[open] summary{background:#e8eddc;color:var(--green)}
+ .practice-menu nav{position:absolute;right:0;top:calc(100% + 6px);width:260px;max-width:calc(100vw - 24px);padding:8px;background:#fffef9;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px #293c3129}
+ .practice-menu[open] nav{display:grid;gap:2px}
+ .practice-menu .nav-btn{text-align:left;min-height:48px;font-size:15px}
+ .practice-menu .nav-btn:hover{background:#edf2df}
+ .practice-source{border-top:1px solid var(--line);padding:10px 8px 2px;margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.6;text-align:left}
+ .play-shell .play-layout{flex:1;min-height:0;grid-template-columns:minmax(0,min(calc(100vh - var(--practice-offset)),calc(100vw - 350px))) minmax(300px,1fr);grid-template-columns:minmax(0,min(calc(100dvh - var(--practice-offset)),calc(100vw - 350px))) minmax(300px,1fr);gap:14px;margin:0;align-items:stretch}
+ .play-shell .board-wrap{align-self:start;justify-self:center;width:100%;max-width:none;padding:4px;border-radius:10px}
+ .play-shell .lesson-board{border-radius:6px}
+ .play-shell .board-caption{display:none}
+ .play-shell:has(.diagram-notice){--practice-offset:104px}
+ .play-shell .diagram-notice{font-size:11px;padding:6px 8px;margin:0 0 8px;line-height:1.4}
+ .play-shell .coach{display:flex;flex-direction:column;min-height:0;padding:0;overflow:hidden;border-radius:14px}
+ .play-shell .coach-content{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 18px 8px}
+ .play-shell .coach-actions{flex-shrink:0;padding:12px;border-top:1px solid var(--line);background:#fffef9;gap:8px}
+ .play-shell .coach-actions button{min-height:52px}.play-shell #next{flex:1;font-size:18px}
+ .play-shell .coach-mascot,.play-shell .step-label,.play-shell .little-note{display:none}
+ .play-shell .coach .completion-note{display:block;font-size:12px;line-height:1.6;margin:8px 0;color:var(--muted)}
+ .play-shell .coach h2{font-size:20px;line-height:1.4;margin:0 0 10px}
+ .play-shell .coach .instruction{font-size:17px;line-height:1.85;min-height:0;margin:12px 0 20px;color:#4e6247}
+ .play-shell .feedback{padding:10px 12px;margin:12px 0;min-height:0;font-size:14px;line-height:1.7}
+ .play-shell .coach:has(.win-stars) .feedback{display:none}
+ .play-shell .hint-box{padding:10px 12px;margin:10px 0;font-size:14px;line-height:1.7}
+ .play-shell .win-stars{font-size:30px;letter-spacing:6px;margin:6px 0 14px}
+ .play-shell .move-history{margin:18px 0 12px}.play-shell .history-heading{padding:10px;font-size:14px}
+ .play-shell .move-table{max-height:240px}.play-shell .move-cell{padding:8px 10px;font-size:18px;min-height:46px}
+ .play-shell .history-controls button{min-height:44px}
  .play-shell>main>.error-notice{max-height:72px;overflow:auto;flex-shrink:0;margin:0;padding:6px 10px}
- .play-shell:has(.error-notice) .board-wrap{max-width:calc(100dvh - 244px)}
+ .play-shell:has(.error-notice){--practice-offset:136px}
+ .play-shell:has(.error-notice):has(.diagram-notice){--practice-offset:176px}
 }
 @media (min-width:768px) and (max-aspect-ratio:1/1){
  .play-shell .play-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1.65fr) minmax(220px,1fr);gap:12px}
- .play-shell .board-wrap{height:100%;width:auto;max-width:100%;aspect-ratio:1;position:relative;display:flex;flex-direction:column;padding:8px 8px 30px}
+ .play-shell .board-wrap{height:100%;width:auto;max-width:100%;aspect-ratio:1;position:relative;display:flex;flex-direction:column;padding:4px}
  .play-shell .board-wrap #board{height:100%;width:auto;max-width:100%;align-self:center;aspect-ratio:1;flex-shrink:1;min-height:0}
- .play-shell .board-caption{position:absolute;bottom:7px;left:10px;right:10px;padding:0}
- .play-shell .board-wrap:has(.diagram-notice){max-width:100%;padding-top:40px}
+ .play-shell .board-wrap:has(.diagram-notice){max-width:100%;padding-top:36px}
  .play-shell .diagram-notice{position:absolute;top:4px;left:8px;right:8px;line-height:1.3}
- .play-shell .coach-content{padding:10px 16px}.play-shell .coach-mascot,.play-shell .step-label{display:none}
- .play-shell .coach h2{font-size:18px;margin:0 0 6px}.play-shell .coach .instruction{font-size:15px;line-height:1.6;margin:6px 0}
+ .play-shell .coach-content{padding:10px 16px}
+ .play-shell .coach h2{font-size:18px;margin:0 0 6px}.play-shell .coach .instruction{font-size:16px;line-height:1.6;margin:6px 0}
  .play-shell .coach-actions{padding:8px 16px}.play-shell .win-stars{font-size:27px;margin:6px 0}
  .play-shell .feedback{margin:8px 0;padding:8px 10px}
 }
